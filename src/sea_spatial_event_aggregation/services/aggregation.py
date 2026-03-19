@@ -1,9 +1,12 @@
 import geopandas as gpd
 from pandas import Series
 
-from src.sea.core.geometries import PointLayer, PolygonLayer
-from src.sea.exceptions import CRSMismatchError, UndefinedCRSError
-from src.sea.utils.crs_conversion import crs_to_local
+from src.sea_spatial_event_aggregation.core.geometries import PointLayer, PolygonLayer
+from src.sea_spatial_event_aggregation.exceptions import (
+    CRSMismatchError,
+    UndefinedCRSError,
+)
+from src.sea_spatial_event_aggregation.utils.crs_conversion import crs_to_local
 
 
 def count_points_in_polygon(
