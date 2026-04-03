@@ -6,23 +6,23 @@ from src.sea.exceptions import CRSMismatchError, UndefinedCRSError
 from src.sea.utils.crs_conversion import crs_to_local
 
 
+def check_crs(layer):
+    if layer.data.crs is None:
+        raise UndefinedCRSError(f"Не задана СК у слоя {layer.name}")
+
+
 def count_points_in_polygon(
     points_gdf: PointLayer, polygons_gdf: PolygonLayer
 ) -> Series:
+
+    check_crs(points_gdf)
+    check_crs(polygons_gdf)
 
     polygons_local = crs_to_local(polygons_gdf.data)
     points_local = points_gdf.data.to_crs(polygons_local.crs)
 
     if polygons_local.crs != points_local.crs:
         raise CRSMismatchError(f"Системы координат слоев не совпадают!")
-
-    if points_gdf.data.crs is None:
-        raise UndefinedCRSError(f"Не задана СК у точечного слоя {points_gdf.name}!")
-
-    if polygons_gdf.data.crs is None:
-        raise UndefinedCRSError(
-            f"Не задана СК у полигонального слоя {polygons_gdf.name}!"
-        )
 
     points_in_districts = gpd.sjoin(polygons_local, points_local, predicate="contains")
     points_count = points_in_districts.groupby(polygons_gdf.name).size()
